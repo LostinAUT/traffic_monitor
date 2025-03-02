@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Traffic Line Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div style="width:80%; margin:auto;">
+        <h2>Vehicle Traffic Line Chart</h2>
+        <canvas id="trafficChart"></canvas>
+    </div>
+
+    <script>
+        // 从 Flask 后端传递的数据 (通过 Jinja2)
+        const dataFromBackend = {{ data | tojson }};
+        
+        // 提取时间戳和车流量
+        const timestamps = dataFromBackend.map(entry => entry.timestamp);
+        const vehicleCounts = dataFromBackend.map(entry => entry.vehicle_count);
+
+        // 绘制折线图
+        const ctx = document.getElementById('trafficChart').getContext('2d');
+        const trafficChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timestamps, // 时间戳作为横轴
+                datasets: [{
+                    label: 'Vehicle Count',
+                    data: vehicleCounts, // 车流量作为纵轴
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Vehicle Count'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
